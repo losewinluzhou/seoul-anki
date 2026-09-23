@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<title>韓語閃卡 · SRS 學習</title>
-<meta name="description" content="韓語旅遊會話間隔重複學習 App">
+<title>韓語閃卡 · 情境應對</title>
+<meta name="description" content="韓語旅遊會話情境練習 App">
 
 <!-- PWA / iOS Safari -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="韓語閃卡">
+<meta name="apple-mobile-web-app-title" content="韓語對話">
 <meta name="theme-color" content="#121212">
 <meta name="mobile-web-app-capable" content="yes">
 
@@ -24,9 +24,7 @@
   --primary: #bb86fc;
   --primary-dim: #9a67db;
   --secondary: #03dac6;
-  --error: #cf6679;
-  --warning: #ffb74d;
-  --success: #81c784;
+  --accent: #ffb74d;
   --on-bg: #e0e0e0;
   --on-surface: #ffffff;
   --on-muted: #888888;
@@ -72,37 +70,6 @@ html, body {
   letter-spacing: 1px;
 }
 
-/* ===== Stats Bar ===== */
-.stats-bar {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 10px 0 6px;
-  flex-shrink: 0;
-}
-
-.stat {
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 1.6rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.7rem;
-  color: var(--on-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 2px;
-}
-
-.stat-new .stat-value { color: var(--secondary); }
-.stat-review .stat-value { color: var(--primary); }
-.stat-done .stat-value { color: var(--success); }
-
 /* ===== Progress Bar ===== */
 .progress-wrap {
   width: 100%;
@@ -111,15 +78,25 @@ html, body {
   border-radius: 2px;
   overflow: hidden;
   flex-shrink: 0;
-  margin-bottom: 8px;
+  margin-top: 8px;
+  margin-bottom: 16px;
 }
 
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--primary), var(--secondary));
   border-radius: 2px;
-  transition: width 0.4s ease;
+  transition: width 0.3s ease;
   width: 0%;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--on-muted);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
 }
 
 /* ===== Card Area ===== */
@@ -128,12 +105,11 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 1200px;
   min-height: 0;
   padding: 4px 0;
 }
 
-/* ===== Flip Card ===== */
+/* ===== Single Card ===== */
 .card-container {
   width: 100%;
   max-width: 380px;
@@ -141,26 +117,10 @@ html, body {
   max-height: 100%;
   cursor: pointer;
   position: relative;
-}
-
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
-  transform-style: preserve-3d;
-}
-
-.card-container.flipped .card-inner {
-  transform: rotateY(180deg);
-}
-
-.card-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
+  background: linear-gradient(145deg, #1f1f3a, #1a1a2e);
+  border: 1px solid rgba(187, 134, 252, 0.15);
   border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -168,19 +128,17 @@ html, body {
   padding: 28px 24px;
   text-align: center;
   overflow: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.3s ease;
 }
 
-.card-front {
-  background: linear-gradient(145deg, #1f1f3a, #1a1a2e);
-  border: 1px solid rgba(187, 134, 252, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-}
-
-.card-back {
+.card-container.answer-mode {
   background: linear-gradient(145deg, #1a2e1a, #1e2d1e);
   border: 1px solid rgba(3, 218, 198, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-  transform: rotateY(180deg);
+}
+
+.card-container.fade-out {
+  opacity: 0;
+  transform: scale(0.97);
 }
 
 .card-badge {
@@ -192,6 +150,9 @@ html, body {
   letter-spacing: 2px;
   color: var(--on-muted);
   font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .card-id {
@@ -203,27 +164,29 @@ html, body {
   font-weight: 600;
 }
 
-.card-text-zh {
-  font-size: 1.65rem;
-  font-weight: 700;
-  color: var(--on-surface);
-  line-height: 1.45;
-  letter-spacing: 0.5px;
+/* Content Layout */
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
 }
 
-.card-text-ko {
+.text-ko {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--secondary);
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-
-.card-text-zh-small {
-  font-size: 1rem;
-  color: var(--on-muted);
-  margin-top: 12px;
   line-height: 1.4;
+}
+.question-mode .text-ko { color: var(--accent); }
+.answer-mode .text-ko { color: var(--secondary); }
+
+.text-zh {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  line-height: 1.45;
 }
 
 .card-hint {
@@ -235,8 +198,8 @@ html, body {
 }
 
 .speaker-icon {
-  margin-top: 16px;
-  font-size: 1.6rem;
+  margin-top: 8px;
+  font-size: 1.4rem;
   opacity: 0.5;
   animation: pulse-speaker 2s infinite;
 }
@@ -246,69 +209,49 @@ html, body {
   50% { opacity: 0.8; }
 }
 
-/* ===== Rating Buttons ===== */
-.rating-area {
+/* ===== Navigation Buttons ===== */
+.nav-area {
   flex-shrink: 0;
-  padding: 8px 0 4px;
+  padding: 16px 0 8px;
+  display: flex;
+  gap: 12px;
 }
 
-.rating-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.btn-rate {
+.btn-nav {
+  flex: 1;
   border: none;
-  border-radius: 14px;
-  padding: 14px 4px;
-  font-size: 0.85rem;
+  border-radius: 16px;
+  padding: 16px 4px;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  min-height: 56px;
   -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
-.btn-rate:active {
-  transform: scale(0.93);
+.btn-nav:active {
+  transform: scale(0.96);
 }
 
-.btn-rate .btn-interval {
-  font-size: 0.6rem;
-  font-weight: 500;
-  opacity: 0.7;
+.btn-prev {
+  background: var(--surface-light);
+  color: var(--on-surface);
 }
 
-.btn-again {
-  background: rgba(207, 102, 121, 0.2);
-  color: var(--error);
-  border: 1px solid rgba(207, 102, 121, 0.3);
+.btn-next {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dim));
+  color: #fff;
 }
 
-.btn-hard {
-  background: rgba(255, 183, 77, 0.15);
-  color: var(--warning);
-  border: 1px solid rgba(255, 183, 77, 0.25);
+.btn-next.finish {
+  background: linear-gradient(135deg, var(--secondary), #00b3a6);
 }
 
-.btn-good {
-  background: rgba(129, 199, 132, 0.15);
-  color: var(--success);
-  border: 1px solid rgba(129, 199, 132, 0.25);
-}
-
-.btn-easy {
-  background: rgba(3, 218, 198, 0.15);
-  color: var(--secondary);
-  border: 1px solid rgba(3, 218, 198, 0.25);
-}
-
-/* ===== Empty State ===== */
+/* ===== End State ===== */
 .empty-state {
   display: none;
   flex-direction: column;
@@ -335,55 +278,27 @@ html, body {
   color: var(--on-surface);
 }
 
-.empty-subtitle {
-  font-size: 0.9rem;
-  color: var(--on-muted);
-  line-height: 1.5;
-}
-
 .btn-reset {
   margin-top: 12px;
   padding: 14px 32px;
   border: none;
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dim));
-  color: #fff;
+  background: var(--surface-light);
+  color: var(--on-surface);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease;
 }
 
-.btn-reset:active {
-  transform: scale(0.95);
-}
-
-/* ===== Hidden Utility ===== */
+/* ===== Utility ===== */
 .hidden { display: none !important; }
-
-/* ===== Swipe Hint Animation ===== */
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.card-container {
-  animation: fade-in-up 0.35s ease-out;
-}
 
 /* ===== Responsive Tweaks ===== */
 @media (max-height: 667px) {
-  .card-text-zh { font-size: 1.35rem; }
-  .card-text-ko { font-size: 1.5rem; }
+  .text-zh { font-size: 1.25rem; }
+  .text-ko { font-size: 1.5rem; }
   .card-container { aspect-ratio: 4 / 5; }
-  .btn-rate { padding: 10px 4px; min-height: 48px; font-size: 0.8rem; }
-  .stats-bar { gap: 14px; padding: 6px 0; }
-  .stat-value { font-size: 1.3rem; }
-}
-
-@media (min-height: 900px) {
-  .card-text-zh { font-size: 1.9rem; }
-  .card-text-ko { font-size: 2.1rem; }
+  .btn-nav { padding: 14px 4px; }
 }
 </style>
 </head>
@@ -392,390 +307,259 @@ html, body {
 <div id="app">
   <!-- Header -->
   <div class="header">
-    <h1>🇰🇷 韓語閃卡</h1>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats-bar">
-    <div class="stat stat-new">
-      <div class="stat-value" id="stat-new">0</div>
-      <div class="stat-label">新卡</div>
-    </div>
-    <div class="stat stat-review">
-      <div class="stat-value" id="stat-review">0</div>
-      <div class="stat-label">複習</div>
-    </div>
-    <div class="stat stat-done">
-      <div class="stat-value" id="stat-done">0</div>
-      <div class="stat-label">完成</div>
-    </div>
+    <h1>🇰🇷 韓語對話特訓</h1>
   </div>
 
   <!-- Progress -->
+  <div class="progress-text" id="progress-text">情境：1 / 50</div>
   <div class="progress-wrap">
     <div class="progress-fill" id="progress-fill"></div>
   </div>
 
   <!-- Card -->
   <div class="card-area" id="card-area">
-    <div class="card-container" id="card-container" onclick="flipCard()">
-      <div class="card-inner" id="card-inner">
-        <!-- Front -->
-        <div class="card-face card-front">
-          <div class="card-badge">中文</div>
-          <div class="card-id" id="card-id">#1</div>
-          <div class="card-text-zh" id="card-zh">載入中…</div>
-          <div class="card-hint">點擊翻卡</div>
-        </div>
-        <!-- Back -->
-        <div class="card-face card-back">
-          <div class="card-badge">한국어</div>
-          <div class="card-text-ko" id="card-ko"></div>
-          <div class="speaker-icon">🔊</div>
-          <div class="card-text-zh-small" id="card-zh-back"></div>
-        </div>
+    <div class="card-container question-mode" id="card-container" onclick="handleCardClick()">
+      <div class="card-badge" id="card-badge">聽力問題</div>
+      <div class="card-id" id="card-id">#1</div>
+      
+      <div class="content-wrapper">
+        <!-- Korean Text (Question or Answer) -->
+        <div class="text-ko" id="text-ko"></div>
+        <div class="speaker-icon" id="speaker-icon">🔊</div>
+        <!-- Chinese Text -->
+        <div class="text-zh" id="text-zh">載入中…</div>
       </div>
+      
+      <div class="card-hint" id="card-hint">點擊看應對策略</div>
     </div>
   </div>
 
-  <!-- Rating Buttons (hidden until flip) -->
-  <div class="rating-area hidden" id="rating-area">
-    <div class="rating-buttons">
-      <button class="btn-rate btn-again" onclick="rateCard(0)">
-        <span>重來</span>
-        <span class="btn-interval" id="interval-again"></span>
-      </button>
-      <button class="btn-rate btn-hard" onclick="rateCard(2)">
-        <span>困難</span>
-        <span class="btn-interval" id="interval-hard"></span>
-      </button>
-      <button class="btn-rate btn-good" onclick="rateCard(3)">
-        <span>良好</span>
-        <span class="btn-interval" id="interval-good"></span>
-      </button>
-      <button class="btn-rate btn-easy" onclick="rateCard(5)">
-        <span>簡單</span>
-        <span class="btn-interval" id="interval-easy"></span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Empty State -->
+  <!-- End State -->
   <div class="empty-state" id="empty-state">
     <div class="empty-icon">🎉</div>
-    <div class="empty-title">今日複習完成！</div>
-    <div class="empty-subtitle">太棒了，所有卡片都已複習完畢。<br>明天再回來繼續學習吧！</div>
-    <button class="btn-reset" onclick="resetAllProgress()">重設所有進度</button>
+    <div class="empty-title">特訓完成！</div>
+    <button class="btn-reset" onclick="resetProgress()">重新開始</button>
+  </div>
+
+  <!-- Nav Buttons -->
+  <div class="nav-area" id="nav-area">
+    <button class="btn-nav btn-prev" onclick="prevStep()">⬅️ 上一步</button>
+    <button class="btn-nav btn-next" id="btn-next" onclick="nextStep()">你的應對 ➡️</button>
   </div>
 </div>
 
 <script>
-// ===== Card Data =====
+// Expanded Dataset conforming to Q&A conversational flow
 const cardData = [
-  { id: 1, zh: "請問幾位？", ko: "몇 분이세요?" },
-  { id: 2, zh: "內用還是外帶？", ko: "드시고 가시나요, 포장하시나요?" },
-  { id: 3, zh: "需要買塑膠袋嗎？", ko: "봉투 필요하세요?" },
-  { id: 4, zh: "需要收據嗎？", ko: "영수증 드릴까요?" },
-  { id: 5, zh: "有會員要集點嗎？", ko: "포인트 적립하시겠어요?" },
-  { id: 6, zh: "這道菜有點辣，可以嗎？", ko: "조금 매운데 괜찮으세요?" },
-  { id: 7, zh: "請出示身分證/護照", ko: "신분증 / 여권 보여주세요." },
-  { id: 8, zh: "要點餐了嗎？", ko: "주문하시겠어요?" },
-  { id: 9, zh: "需要加小菜嗎？", ko: "반찬 더 드릴까요?" },
-  { id: 10, zh: "需要幫你們分開結帳嗎？", ko: "따로 결제해 드릴까요?" },
-  { id: 11, zh: "司機您好。", ko: "기사님, 안녕하세요." },
-  { id: 12, zh: "請幫忙開一下後車廂。", ko: "트렁크 좀 열어주세요." },
-  { id: 13, zh: "請問是這台車嗎？", ko: "이 차 맞나요?" },
-  { id: 14, zh: "請稍微開慢一點。", ko: "조금만 천천히 가주세요." },
-  { id: 15, zh: "請在這裡讓我們下車。", ko: "여기서 내려주세요." },
-  { id: 16, zh: "謝謝，再見。", ko: "감사합니다. 안녕히 계세요." },
-  { id: 17, zh: "我們從台灣來的。", ko: "대만에서 왔어요." },
-  { id: 18, zh: "這是跟朋友一起來旅遊的。", ko: "친구들이랑 여행 왔어요." },
-  { id: 19, zh: "韓國食物非常美味。", ko: "한국 음식 너무 맛있어요." },
-  { id: 20, zh: "我只會一點點韓文。", ko: "한국어 조금밖에 못해요." },
-  { id: 21, zh: "我們五位，請問有位子嗎？", ko: "다섯 명입니다. 자리 있어요?" },
-  { id: 22, zh: "我們可以分成兩桌坐嗎？", ko: "두 테이블로 나눠 앉아도 되나요?" },
-  { id: 23, zh: "這裡要點餐。", ko: "여기 주문할게요." },
-  { id: 24, zh: "這個請給我們五人份。", ko: "이거 오인분 주세요." },
-  { id: 25, zh: "這個要三份，那個要兩份。", ko: "이거 세 개, 저거 두 개 주세요." },
-  { id: 26, zh: "請做微辣就好。", ko: "덜 맵게 해주세요." },
-  { id: 27, zh: "請給我們五個分裝小盤子。", ko: "앞접시 다섯 개 주세요." },
-  { id: 28, zh: "請給我們濕紙巾。", ko: "물티슈 좀 주세요." },
-  { id: 29, zh: "請給我們五件圍裙。", ko: "앞치마 다섯 개 주세요." },
-  { id: 30, zh: "請問可以幫我們烤肉嗎？", ko: "고기 좀 구워주시겠어요?" },
-  { id: 31, zh: "請再給我們一點水。", ko: "물 좀 더 주세요." },
-  { id: 32, zh: "這個請幫我們打包。", ko: "이거 포장해 주세요." },
-  { id: 33, zh: "我們要結帳。", ko: "계산해 주세요." },
-  { id: 34, zh: "請幫我們各自分開結帳。", ko: "따로따로 계산해 주세요." },
-  { id: 35, zh: "我要用信用卡結帳。", ko: "카드로 결제할게요." },
-  { id: 36, zh: "請問這個可以試穿嗎？", ko: "이거 입어봐도 되나요?" },
-  { id: 37, zh: "請問有全新的嗎？", ko: "새 상품으로 주세요." },
-  { id: 38, zh: "請問有更大的尺寸嗎？", ko: "더 큰 사이즈 있나요?" },
-  { id: 39, zh: "請問有更小的尺寸嗎？", ko: "더 작은 사이즈 있나요?" },
-  { id: 40, zh: "請問這裡可以辦理退稅嗎？", ko: "택스리펀 가능한가요?" },
-  { id: 41, zh: "請再給我們五條毛巾。", ko: "수건 다섯 장 더 주세요." },
-  { id: 42, zh: "請問洗手間在哪裡？", ko: "화장실이 어디에 있나요?" },
-  { id: 43, zh: "最近的藥局在哪裡？", ko: "가장 가까운 약국이 어디예요?" },
-  { id: 44, zh: "我非常不舒服，必須去醫院。", ko: "너무 아파요. 병원에 가야 해요." },
-  { id: 45, zh: "我弄丟了錢包。", ko: "지갑을 잃어버렸어요." },
-  { id: 46, zh: "我弄丟了護照。", ko: "여권을 잃어버렸어요." },
-  { id: 47, zh: "可以請您再說一次嗎？", ko: "다시 한번 말씀해 주시겠어요?" },
-  { id: 48, zh: "我的韓文不太好。", ko: "한국어를 잘 못해요." },
-  { id: 49, zh: "請問您會說英文嗎？", ko: "혹시 영어 하실 수 있나요?" },
-  { id: 50, zh: "我用一下翻譯軟體，請稍等。", ko: "번역기 돌릴게요. 잠시만요." }
+  // 模組一：聽力辨識 (Natives ask -> I reply)
+  { id: 1, type: "店員提問", q_ko: "몇 분이세요?", q_zh: "請問幾位？", a_ko: "다섯 명이요.", a_zh: "我們五位。" },
+  { id: 2, type: "店員提問", q_ko: "드시고 가시나요, 포장하시나요?", q_zh: "內用還是外帶？", a_ko: "먹고 갈게요.", a_zh: "內用。" },
+  { id: 3, type: "店員提問", q_ko: "봉투 필요하세요?", q_zh: "需要買塑膠袋嗎？", a_ko: "네, 주세요.", a_zh: "好的，請給我。" },
+  { id: 4, type: "店員提問", q_ko: "영수증 드릴까요?", q_zh: "需要收據嗎？", a_ko: "아니요, 버려주세요.", a_zh: "不用，請幫我丟掉。" },
+  { id: 5, type: "店員提問", q_ko: "포인트 적립하시겠어요?", q_zh: "有會員要集點嗎？", a_ko: "아니요.", a_zh: "沒有。" },
+  { id: 6, type: "店員提問", q_ko: "조금 매운데 괜찮으세요?", q_zh: "這道菜有點辣，可以嗎？", a_ko: "네, 괜찮아요.", a_zh: "可以，沒關係。" },
+  { id: 7, type: "海關/店員", q_ko: "신분증 / 여권 보여주세요.", q_zh: "請出示身分證或護照。", a_ko: "여기 있습니다.", a_zh: "在這裡。" },
+  { id: 8, type: "店員提問", q_ko: "주문하시겠어요?", q_zh: "要點餐了嗎？", a_ko: "네, 주문할게요.", a_zh: "是的，我要點餐。" },
+  { id: 9, type: "店員提問", q_ko: "반찬 더 드릴까요?", q_zh: "需要加小菜嗎？", a_ko: "네, 더 주세요.", a_zh: "好的，請多給一點。" },
+  { id: 10, type: "店員提問", q_ko: "따로 결제해 드릴까요?", q_zh: "需要幫你們分開結帳嗎？", a_ko: "네, 따로따로 해주세요.", a_zh: "是的，請分開結帳。" },
+  
+  // 模組二：交通與寒暄 (Situation -> I say)
+  { id: 11, type: "搭車情境", q_ko: "", q_zh: "剛上計程車時...", a_ko: "기사님, 안녕하세요.", a_zh: "司機您好。" },
+  { id: 12, type: "搭車情境", q_ko: "", q_zh: "有很多行李要放...", a_ko: "트렁크 좀 열어주세요.", a_zh: "請幫忙開一下後車廂。" },
+  { id: 13, type: "搭車情境", q_ko: "", q_zh: "向司機確認叫的車...", a_ko: "이 차 맞나요?", a_zh: "請問是這台車嗎？" },
+  { id: 14, type: "搭車情境", q_ko: "", q_zh: "覺得車速有點太快...", a_ko: "조금만 천천히 가주세요.", a_zh: "請稍微開慢一點。" },
+  { id: 15, type: "搭車情境", q_ko: "", q_zh: "到達目的地準備下車...", a_ko: "여기서 내려주세요.", a_zh: "請在這裡讓我們下車。" },
+  { id: 16, type: "搭車情境", q_ko: "", q_zh: "下車時道別...", a_ko: "감사합니다. 안녕히 계세요.", a_zh: "謝謝，再見。" },
+  { id: 17, type: "寒暄提問", q_ko: "어디서 오셨어요?", q_zh: "你們從哪裡來？", a_ko: "대만에서 왔어요.", a_zh: "我們從台灣來的。" },
+  { id: 18, type: "寒暄提問", q_ko: "누구랑 여행 왔어요?", q_zh: "跟誰來旅遊？", a_ko: "친구들이랑 여행 왔어요.", a_zh: "這是跟朋友一起來旅遊的。" },
+  { id: 19, type: "寒暄提問", q_ko: "한국 음식 어때요?", q_zh: "覺得韓國食物如何？", a_ko: "한국 음식 너무 맛있어요.", a_zh: "韓國食物非常美味。" },
+  { id: 20, type: "寒暄提問", q_ko: "한국어 잘하시네요!", q_zh: "你韓文說得真好！", a_ko: "한국어 조금밖에 못해요.", a_zh: "我只會一點點韓文。" },
+
+  // 模組三：5 人團體餐廳指令
+  { id: 21, type: "餐廳情境", q_ko: "", q_zh: "進入餐廳詢問座位...", a_ko: "다섯 명입니다. 자리 있어요?", a_zh: "我們五位，請問有位子嗎？" },
+  { id: 22, type: "餐廳情境", q_ko: "", q_zh: "座位太擠想分桌...", a_ko: "두 테이블로 나눠 앉아도 되나요?", a_zh: "我們可以分成兩桌坐嗎？" },
+  { id: 23, type: "餐廳情境", q_ko: "", q_zh: "招手呼叫服務生...", a_ko: "여기 주문할게요.", a_zh: "這裡要點餐。" },
+  { id: 24, type: "餐廳情境", q_ko: "", q_zh: "點某道菜 (5人份)...", a_ko: "이거 오인분 주세요.", a_zh: "這個請給我們五人份。" },
+  { id: 25, type: "餐廳情境", q_ko: "", q_zh: "點菜時分配數量...", a_ko: "이거 세 개, 저거 두 개 주세요.", a_zh: "這個要三份，那個要兩份。" },
+  { id: 26, type: "餐廳情境", q_ko: "", q_zh: "不敢吃太辣...", a_ko: "덜 맵게 해주세요.", a_zh: "請做微辣就好。" },
+  { id: 27, type: "餐廳情境", q_ko: "", q_zh: "需要分食工具...", a_ko: "앞접시 다섯 개 주세요.", a_zh: "請給我們五個分裝小盤子。" },
+  { id: 28, type: "餐廳情境", q_ko: "", q_zh: "手髒了需要擦拭...", a_ko: "물티슈 좀 주세요.", a_zh: "請給我們濕紙巾。" },
+  { id: 29, type: "餐廳情境", q_ko: "", q_zh: "怕烤肉噴到衣服...", a_ko: "앞치마 다섯 개 주세요.", a_zh: "請給我們五件圍裙。" },
+  { id: 30, type: "餐廳情境", q_ko: "", q_zh: "不太會烤肉...", a_ko: "고기 좀 구워주시겠어요?", a_zh: "請問可以幫我們烤肉嗎？" },
+  { id: 31, type: "餐廳情境", q_ko: "", q_zh: "水瓶空了...", a_ko: "물 좀 더 주세요.", a_zh: "請再給我們一點水。" },
+  { id: 32, type: "餐廳情境", q_ko: "", q_zh: "食物剩太多...", a_ko: "이거 포장해 주세요.", a_zh: "這個請幫我們打包。" },
+  { id: 33, type: "餐廳情境", q_ko: "", q_zh: "吃飽準備離開...", a_ko: "계산해 주세요.", a_zh: "我們要結帳。" },
+  { id: 34, type: "餐廳情境", q_ko: "", q_zh: "想要 AA 制...", a_ko: "따로따로 계산해 주세요.", a_zh: "請幫我們各自分開結帳。" },
+  { id: 35, type: "店員提問", q_ko: "결제는 어떻게 도와드릴까요?", q_zh: "請問怎麼付款？", a_ko: "카드로 결제할게요.", a_zh: "我要用信用卡結帳。" },
+
+  // 模組四：購物與極端停損
+  { id: 36, type: "購物情境", q_ko: "", q_zh: "看到喜歡的衣服...", a_ko: "이거 입어봐도 되나요?", a_zh: "請問這個可以試穿嗎？" },
+  { id: 37, type: "購物情境", q_ko: "", q_zh: "架上展示品有髒污...", a_ko: "새 상품으로 주세요.", a_zh: "請問有全新的嗎？" },
+  { id: 38, type: "購物情境", q_ko: "", q_zh: "試穿覺得太緊...", a_ko: "더 큰 사이즈 있나요?", a_zh: "請問有更大的尺寸嗎？" },
+  { id: 39, type: "購物情境", q_ko: "", q_zh: "試穿覺得太鬆...", a_ko: "더 작은 사이즈 있나요?", a_zh: "請問有更小的尺寸嗎？" },
+  { id: 40, type: "購物情境", q_ko: "", q_zh: "結帳時詢問...", a_ko: "택스리펀 가능한가요?", a_zh: "請問這裡可以辦理退稅嗎？" },
+  { id: 41, type: "飯店情境", q_ko: "", q_zh: "房內毛巾不夠...", a_ko: "수건 다섯 장 더 주세요.", a_zh: "請再給我們五條毛巾。" },
+  { id: 42, type: "求助情境", q_ko: "", q_zh: "突然內急...", a_ko: "화장실이 어디에 있나요?", a_zh: "請問洗手間在哪裡？" },
+  { id: 43, type: "求助情境", q_ko: "", q_zh: "需要買成藥...", a_ko: "가장 가까운 약국이 어디예요?", a_zh: "最近的藥局在哪裡？" },
+  { id: 44, type: "極端狀況", q_ko: "", q_zh: "身體非常不舒服...", a_ko: "너무 아파요. 병원에 가야 해요.", a_zh: "我非常不舒服，必須去醫院。" },
+  { id: 45, type: "極端狀況", q_ko: "", q_zh: "發現錢包不見了...", a_ko: "지갑을 잃어버렸어요.", a_zh: "我弄丟了錢包。" },
+  { id: 46, type: "極端狀況", q_ko: "", q_zh: "發現護照不見了...", a_ko: "여권을 잃어버렸어요.", a_zh: "我弄丟了護照。" },
+  { id: 47, type: "極端狀況", q_ko: "", q_zh: "聽不懂對方說什麼...", a_ko: "다시 한번 말씀해 주시겠어요?", a_zh: "可以請您再說一次嗎？" },
+  { id: 48, type: "極端狀況", q_ko: "", q_zh: "對方講太多韓文...", a_ko: "한국어를 잘 못해요.", a_zh: "我的韓文不太好。" },
+  { id: 49, type: "極端狀況", q_ko: "", q_zh: "想切換語言...", a_ko: "혹시 영어 하실 수 있나요?", a_zh: "請問您會說英文嗎？" },
+  { id: 50, type: "極端狀況", q_ko: "", q_zh: "需要時間溝通...", a_ko: "번역기 돌릴게요. 잠시만요.", a_zh: "我用一下翻譯軟體，請稍等。" }
 ];
 
-// ===== Constants =====
-const STORAGE_KEY = 'korean-srs-cards';
-const MS_PER_DAY = 86400000;
-const MS_PER_MIN = 60000;
-
-// ===== State =====
-let cards = [];         // full deck with SRS state
-let queue = [];         // today's review queue
+// State
 let currentIndex = 0;
-let isFlipped = false;
-let sessionDone = 0;    // cards reviewed this session
-let sessionTotal = 0;
+let isAnswerState = false; // false = showing prompt, true = showing answer
+let isAnimating = false;
 
-// ===== DOM Refs =====
+// DOM
 const elCardContainer = document.getElementById('card-container');
-const elCardZh = document.getElementById('card-zh');
-const elCardKo = document.getElementById('card-ko');
-const elCardZhBack = document.getElementById('card-zh-back');
+const elCardBadge = document.getElementById('card-badge');
 const elCardId = document.getElementById('card-id');
-const elRatingArea = document.getElementById('rating-area');
-const elCardArea = document.getElementById('card-area');
-const elEmptyState = document.getElementById('empty-state');
-const elStatNew = document.getElementById('stat-new');
-const elStatReview = document.getElementById('stat-review');
-const elStatDone = document.getElementById('stat-done');
+const elTextZh = document.getElementById('text-zh');
+const elTextKo = document.getElementById('text-ko');
+const elSpeaker = document.getElementById('speaker-icon');
+const elCardHint = document.getElementById('card-hint');
+const elProgressText = document.getElementById('progress-text');
 const elProgressFill = document.getElementById('progress-fill');
-const elIntervalAgain = document.getElementById('interval-again');
-const elIntervalHard = document.getElementById('interval-hard');
-const elIntervalGood = document.getElementById('interval-good');
-const elIntervalEasy = document.getElementById('interval-easy');
+const elBtnNext = document.getElementById('btn-next');
+const elCardArea = document.getElementById('card-area');
+const elNavArea = document.getElementById('nav-area');
+const elEmptyState = document.getElementById('empty-state');
 
-// ===== Init =====
 function init() {
-  loadCards();
-  buildQueue();
-  sessionTotal = queue.length;
-  sessionDone = 0;
-  updateStats();
-  showCurrentCard();
-}
-
-// ===== Storage =====
-function loadCards() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    try {
-      cards = JSON.parse(stored);
-      // Ensure any new cards from cardData are merged in
-      const existingIds = new Set(cards.map(c => c.id));
-      for (const cd of cardData) {
-        if (!existingIds.has(cd.id)) {
-          cards.push(createCard(cd));
-        }
-      }
-    } catch {
-      cards = cardData.map(createCard);
-    }
-  } else {
-    cards = cardData.map(createCard);
+  const saved = localStorage.getItem('srs-qa-index');
+  if (saved !== null) {
+    currentIndex = parseInt(saved, 10);
+    if (currentIndex >= cardData.length) currentIndex = 0;
   }
-  saveCards();
+  
+  renderCurrentState();
 }
 
-function saveCards() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+function handleCardClick() {
+  if (isAnimating) return;
+  nextStep();
 }
 
-function createCard(data) {
-  return {
-    id: data.id,
-    zh: data.zh,
-    ko: data.ko,
-    interval: 0,
-    repetition: 0,
-    easeFactor: 2.5,
-    nextReview: Date.now()
-  };
-}
-
-// ===== Queue =====
-function buildQueue() {
-  const now = Date.now();
-  queue = cards
-    .filter(c => c.nextReview <= now)
-    .sort((a, b) => a.nextReview - b.nextReview);
-  currentIndex = 0;
-}
-
-// ===== SM-2 Algorithm =====
-function sm2(card, quality) {
-  // quality: 0 = Again, 2 = Hard, 3 = Good, 5 = Easy
-  let { interval, repetition, easeFactor } = card;
-
-  if (quality < 3) {
-    // Failed: reset
-    repetition = 0;
-    interval = 0;
+function nextStep() {
+  if (isAnimating) return;
+  
+  if (!isAnswerState) {
+    changeState(true);
   } else {
-    // Passed
-    if (repetition === 0) {
-      interval = 1;
-    } else if (repetition === 1) {
-      interval = 6;
+    if (currentIndex < cardData.length - 1) {
+      currentIndex++;
+      localStorage.setItem('srs-qa-index', currentIndex);
+      changeState(false);
     } else {
-      interval = Math.round(interval * easeFactor);
+      showEndState();
     }
-    repetition++;
   }
+}
 
-  // Update ease factor
-  easeFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-  if (easeFactor < 1.3) easeFactor = 1.3;
+function prevStep() {
+  if (isAnimating) return;
 
-  // Hard penalty: reduce interval by 15%
-  if (quality === 2) {
-    interval = Math.max(1, Math.round(interval * 0.85));
-  }
-
-  // Easy bonus: multiply interval by 1.3
-  if (quality === 5) {
-    interval = Math.round(interval * 1.3);
-  }
-
-  // Calculate next review timestamp
-  let nextReview;
-  if (interval === 0) {
-    // Show again in 1 minute
-    nextReview = Date.now() + MS_PER_MIN;
+  if (isAnswerState) {
+    changeState(false);
   } else {
-    nextReview = Date.now() + interval * MS_PER_DAY;
+    if (currentIndex > 0) {
+      currentIndex--;
+      localStorage.setItem('srs-qa-index', currentIndex);
+      changeState(true);
+    }
   }
-
-  return { interval, repetition, easeFactor, nextReview };
 }
 
-// Predict interval for UI labels
-function predictInterval(card, quality) {
-  const result = sm2({ ...card }, quality);
-  return result.interval;
+function changeState(toAnswer) {
+  isAnimating = true;
+  elCardContainer.classList.add('fade-out');
+  
+  setTimeout(() => {
+    isAnswerState = toAnswer;
+    renderCurrentState();
+    
+    elCardContainer.classList.remove('fade-out');
+    setTimeout(() => { isAnimating = false; }, 250);
+  }, 200);
 }
 
-function formatInterval(days) {
-  if (days === 0) return '< 1 分';
-  if (days === 1) return '1 天';
-  if (days < 30) return days + ' 天';
-  if (days < 365) return Math.round(days / 30) + ' 月';
-  return (days / 365).toFixed(1) + ' 年';
-}
-
-// ===== Display =====
-function showCurrentCard() {
-  if (queue.length === 0 || currentIndex >= queue.length) {
-    // No more cards
-    elCardArea.classList.add('hidden');
-    elRatingArea.classList.add('hidden');
-    elEmptyState.classList.add('visible');
-    updateStats();
-    return;
-  }
-
-  elCardArea.classList.remove('hidden');
-  elEmptyState.classList.remove('visible');
-
-  const card = queue[currentIndex];
-
-  // Reset flip state
-  isFlipped = false;
-  elCardContainer.classList.remove('flipped');
-  elRatingArea.classList.add('hidden');
-
-  // Populate
-  elCardZh.textContent = card.zh;
-  elCardKo.textContent = card.ko;
-  elCardZhBack.textContent = card.zh;
+function renderCurrentState() {
+  const card = cardData[currentIndex];
+  
+  elProgressText.textContent = `情境：${currentIndex + 1} / ${cardData.length}`;
+  elProgressFill.style.width = `${((currentIndex) / cardData.length) * 100}%`;
   elCardId.textContent = '#' + card.id;
 
-  // Update interval previews
-  elIntervalAgain.textContent = formatInterval(predictInterval(card, 0));
-  elIntervalHard.textContent = formatInterval(predictInterval(card, 2));
-  elIntervalGood.textContent = formatInterval(predictInterval(card, 3));
-  elIntervalEasy.textContent = formatInterval(predictInterval(card, 5));
-
-  // Re-trigger entrance animation
-  elCardContainer.style.animation = 'none';
-  void elCardContainer.offsetHeight; // reflow
-  elCardContainer.style.animation = '';
-
-  updateStats();
-}
-
-function flipCard() {
-  if (isFlipped) return;
-  isFlipped = true;
-  elCardContainer.classList.add('flipped');
-  elRatingArea.classList.remove('hidden');
-
-  // Speak Korean
-  speakKorean(queue[currentIndex].ko);
-}
-
-// ===== Rating =====
-function rateCard(quality) {
-  const card = queue[currentIndex];
-  const updated = sm2(card, quality);
-
-  // Apply to master deck
-  const masterCard = cards.find(c => c.id === card.id);
-  if (masterCard) {
-    masterCard.interval = updated.interval;
-    masterCard.repetition = updated.repetition;
-    masterCard.easeFactor = updated.easeFactor;
-    masterCard.nextReview = updated.nextReview;
-  }
-
-  saveCards();
-  sessionDone++;
-
-  // If "Again" (quality 0), re-insert at end of queue
-  if (quality === 0) {
-    const failedCard = { ...masterCard };
-    queue.push(failedCard);
-  }
-
-  currentIndex++;
-  showCurrentCard();
-}
-
-// ===== Stats =====
-function updateStats() {
-  let newCount = 0;
-  let reviewCount = 0;
-
-  for (let i = currentIndex; i < queue.length; i++) {
-    const c = queue[i];
-    if (c.repetition === 0 && c.interval === 0) {
-      newCount++;
+  if (isAnswerState) {
+    // Show Response
+    elCardContainer.classList.add('answer-mode');
+    elCardContainer.classList.remove('question-mode');
+    elCardBadge.textContent = '你的應對';
+    
+    elTextKo.style.display = 'block';
+    elTextKo.textContent = card.a_ko;
+    elTextZh.textContent = card.a_zh;
+    elSpeaker.style.display = 'block';
+    
+    elCardHint.textContent = '點擊進入下一題';
+    
+    if (currentIndex === cardData.length - 1) {
+      elBtnNext.textContent = '完成 🎉';
+      elBtnNext.classList.add('finish');
     } else {
-      reviewCount++;
+      elBtnNext.textContent = '下一題 ➡️';
+      elBtnNext.classList.remove('finish');
     }
+
+    speakKorean(card.a_ko);
+
+  } else {
+    // Show Prompt / Question
+    elCardContainer.classList.remove('answer-mode');
+    elCardContainer.classList.add('question-mode');
+    elCardBadge.textContent = card.type;
+    
+    if (card.q_ko) {
+      elTextKo.style.display = 'block';
+      elTextKo.textContent = card.q_ko;
+      elSpeaker.style.display = 'block';
+      speakKorean(card.q_ko);
+    } else {
+      elTextKo.style.display = 'none';
+      elSpeaker.style.display = 'none';
+    }
+    
+    elTextZh.textContent = card.q_zh;
+    
+    elCardHint.textContent = '點擊看應對策略';
+    elBtnNext.textContent = '你的應對 ➡️';
+    elBtnNext.classList.remove('finish');
   }
-
-  elStatNew.textContent = newCount;
-  elStatReview.textContent = reviewCount;
-  elStatDone.textContent = sessionDone;
-
-  // Progress bar
-  const total = sessionTotal > 0 ? sessionTotal : 1;
-  const pct = Math.min(100, Math.round((sessionDone / total) * 100));
-  elProgressFill.style.width = pct + '%';
 }
 
-// ===== TTS =====
+function showEndState() {
+  elCardArea.classList.add('hidden');
+  elNavArea.classList.add('hidden');
+  elProgressFill.style.width = '100%';
+  elEmptyState.classList.add('visible');
+  localStorage.setItem('srs-qa-index', 0);
+}
+
+function resetProgress() {
+  currentIndex = 0;
+  isAnswerState = false;
+  localStorage.setItem('srs-qa-index', 0);
+  elEmptyState.classList.remove('visible');
+  elCardArea.classList.remove('hidden');
+  elNavArea.classList.remove('hidden');
+  renderCurrentState();
+}
+
 function speakKorean(text) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
@@ -784,7 +568,6 @@ function speakKorean(text) {
   utter.rate = 0.85;
   utter.pitch = 1;
 
-  // Try to find a Korean voice
   const voices = window.speechSynthesis.getVoices();
   const koVoice = voices.find(v => v.lang.startsWith('ko'));
   if (koVoice) utter.voice = koVoice;
@@ -792,25 +575,11 @@ function speakKorean(text) {
   window.speechSynthesis.speak(utter);
 }
 
-// Ensure voices are loaded (some browsers load async)
 if (window.speechSynthesis) {
   window.speechSynthesis.onvoiceschanged = () => {};
   window.speechSynthesis.getVoices();
 }
 
-// ===== Reset =====
-function resetAllProgress() {
-  if (!confirm('確定要重設所有學習進度嗎？此動作無法復原。')) return;
-  cards = cardData.map(createCard);
-  saveCards();
-  buildQueue();
-  sessionTotal = queue.length;
-  sessionDone = 0;
-  elEmptyState.classList.remove('visible');
-  showCurrentCard();
-}
-
-// ===== Boot =====
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
